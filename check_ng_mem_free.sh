@@ -21,21 +21,17 @@ mem_common_25=$(($mem_common / 4))
 mem_common_50=$(($mem_common / 2))
 mem_common_75=$(($mem_common_25 + $mem_common_50))
 
-# compare used memory to free memory
+# compare used memory to free memory and send metric to nsca-ng-server
 if (($mem_used < $mem_common_50)); then
-        # echo "Ok - memory usage less than 50%"
         echo -e "$host_name\t$check_name\t0\tMemory usage status is less than 50%" | send_nsca -H $server_ip -p $server_port
         exit 0
     elif (($mem_common_50 <= $mem_used && $mem_used <= $mem_common_75)); then
-        #echo "WARNING - memory usage is more than 50% but less then 75%"
         echo -e "$host_name\t$check_name\t1\tMemory usage is more than 50%" | send_nsca -H $server_ip -p $server_port
         exit 1
     elif (($mem_used >= $mem_common_75)); then
-        #echo "CRITICAL - memory usage is more than 75%"
         echo -e "$host_name\t$check_name\t2\tMemory usage status is more than 75%" | send_nsca -H $server_ip -p $server_port
         exit 2
     else
-        #echo "UNKNOWN - memory usage can't be found"
         echo -e "$host_name\t$check_name\t3\tMemory usage status can't be found" | send_nsca -H $server_ip -p $server_port
         exit 3
 fi
